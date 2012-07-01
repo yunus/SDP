@@ -53,7 +53,7 @@ module Scd
         # TODO: fix the source address
         @packet.fix!( Racket::L3::Misc.ipv62long("0"),
           Racket::L3::Misc.ipv62long(@multicast_address))
-        Log.debug "Advertisement packet : #{@packet.pretty}"
+        Log.debug "Advertisement packet in build : #{@packet.pretty}"
         @packet
       end
 
@@ -86,7 +86,7 @@ module Scd
         # TODO: fix the source address
         @packet.fix!( Racket::L3::Misc.ipv62long("0"),
           Racket::L3::Misc.ipv62long(@multicast_address))
-
+        Log.debug "Solicitation packet in build : #{@packet.pretty}"
         @packet
       end    
 

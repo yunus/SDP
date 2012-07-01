@@ -12,7 +12,13 @@ module Scd
         loop do
           message, sender_addrinfo = connection.socket.recvmsg()
           #Log.debug "message: #{message.inspect}, sender address: #{sender_addrinfo.inspect}"
-          dispatcher << {:message => message,:address => sender_addrinfo.ip_address}
+          packet = Racket::L4::ICMPv6Generic.new message
+          case packet.type
+          when Racket::L4::ICMPv6_TYPE_CAPABILITY_SOLICITATION
+            Scd::Responder.solicitation(packet, sender_addrinfo.ip_address)
+          when Racket::L4::ICMPv6_TYPE_CAPABILITY_ADVERTISEMENT
+            dispatcher << {:message => message,:address => sender_addrinfo.ip_address}
+          end          
         end
       rescue => err
 

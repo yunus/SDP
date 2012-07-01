@@ -5,8 +5,8 @@ module Scd
   # For each fragment a separate advertisement message has been sent with
   # sequence number.
   module Publisher
-    def self.pub_file(filename,destination_address,mtu=1500)
-      pub(destination_address,mtu) do
+    def self.pub_file(filename,destination_address,type_class = Scd::ICMPv6::Advertisement,mtu=1500)
+      pub(destination_address,type_class,mtu) do
         begin
           f= File.open(filename, 'r')
         rescue IOError,Errno::ENOENT => err
@@ -17,13 +17,13 @@ module Scd
       end
     end
 
-    def self.pub_message(message,destination_address,mtu=1500)
-      pub(destination_address,mtu,StringIO.new(message))
+    def self.pub_message(message,destination_address,type_class = Scd::ICMPv6::Advertisement,mtu=1500)
+      pub(destination_address,type_class,mtu,StringIO.new(message))
     end
 
 
    # Accepts an IO object. Or send a block which returns the io object
-    def self.pub(destination_address,mtu=1500,io = nil)
+    def self.pub(destination_address,type_class = Scd::ICMPv6::Advertisement,mtu=1500,io = nil)
       #TODO: discover the real header size and decrease it in here. 
       # wireshark tells that it is 66 byte
       mtu -= 100
@@ -32,7 +32,7 @@ module Scd
       number_of_packets = (io.size / Float(mtu)).ceil
       Log.debug " Number of packets:#{number_of_packets}"
       i = 0
-      icmpv6_socket = Scd::ICMPv6::Advertisement.new(destination_address)
+      icmpv6_socket = type_class.new(destination_address)
       while buffer = io.read(mtu)
         i+=1
         # icmpv6 packet is generated
