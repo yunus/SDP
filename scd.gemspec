@@ -19,5 +19,6 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '~> 1.9.3'
   gem.requirements << "Since we are using raw sockets, you should run the codes
  in sudo or rvmsudo if you are using rvm."
-  #gem.add_dependency('racket')
+  gem.add_dependency('linkeddata')
+  gem.add_dependency('sparql')
 end
