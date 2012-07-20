@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module Scd
 
   # Takes the filename, destination address, and may be interface
@@ -33,13 +35,17 @@ module Scd
       Log.debug " Number of packets:#{number_of_packets}"
       i = 0
       icmpv6_socket = type_class.new(destination_address)
+      #ID field to distinguish the packets
+      nonce = SecureRandom.random_bytes(32)
       while buffer = io.read(mtu)
         i+=1
         # icmpv6 packet is generated
-        icmpv6_socket.build do |adv|
-          adv.payload = buffer
+        icmpv6_socket.build(buffer) do |adv|
+      
           adv.sequence = i
           adv.total = number_of_packets
+          adv.id = nonce
+          #adv.add_option(Scd::ICMPv6::NONCE_TYPE,nonce)
         end
         icmpv6_socket.publish!
       end

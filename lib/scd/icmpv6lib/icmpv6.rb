@@ -2,10 +2,16 @@ require 'socket'
 require 'ipaddr'
 require 'racket'
 
+
+
+
 module Scd
   module ICMPv6
 
-    class ICMPv6Generic
+    #RFC-3971 Secure Neighbor Discovery
+    NONCE_TYPE = 14
+
+    class ICMPv6Base
       attr_accessor :multicast_address
       attr_reader   :socket
       attr_reader   :packet
@@ -38,17 +44,18 @@ module Scd
 
     end
 
-    class Advertisement < ICMPv6Generic
+    class Advertisement < ICMPv6Base
 
-      def build(payload='',sequence=1,total=1)
+      def build(payload,sequence=1,total=1)
        
         @packet = Racket::L4::ICMPv6CapabilityAdvertisement.new()
         @packet.sequence = sequence
-        @packet.payload =  payload
+         #We need to pad a 0 to the beginning to distinguish the payload from other TLV options
+        @packet.payload =  "0" +payload
         @packet.total = total
         #sequence and payload should be able to changed inside the caller
         yield @packet if block_given?
-         
+
         
         # TODO: fix the source address
         @packet.fix!( Racket::L3::Misc.ipv62long("0"),
@@ -71,18 +78,20 @@ module Scd
 
     end
 
-    class Solicitation < ICMPv6Generic
+    class Solicitation < ICMPv6Base
 
-      def build(payload='',sequence=1,total=1)
+      def build(payload,sequence=1,total=1)
 
         @packet = Racket::L4::ICMPv6CapabilitySolicitation.new()
         @packet.sequence = sequence
-        @packet.payload =  payload
+        #We need to pad a 0 to the beginning to distinguish the payload from other TLV options
+        @packet.payload =  "0" +payload
         @packet.total = total
         #sequence and payload should be able to changed inside the caller
         yield @packet if block_given?
 
-
+        # We need to pad a 0 to the beginning to distinguish the payload from other TLV options
+        @packet.payload = [48].pack('C') + @packet.payload
         # TODO: fix the source address
         @packet.fix!( Racket::L3::Misc.ipv62long("0"),
           Racket::L3::Misc.ipv62long(@multicast_address))
