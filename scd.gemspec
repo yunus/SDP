@@ -21,4 +21,5 @@ Gem::Specification.new do |gem|
  in sudo or rvmsudo if you are using rvm."
   gem.add_dependency('linkeddata')
   gem.add_dependency('sparql')
+  gem.add_dependency('thor')
 end

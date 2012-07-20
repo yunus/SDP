@@ -36,7 +36,7 @@ module Scd
       i = 0
       icmpv6_socket = type_class.new(destination_address)
       #ID field to distinguish the packets
-      nonce = SecureRandom.random_bytes(32)
+      nonce = SecureRandom.random_number(10000)
       while buffer = io.read(mtu)
         i+=1
         # icmpv6 packet is generated
