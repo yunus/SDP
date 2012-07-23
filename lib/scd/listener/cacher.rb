@@ -45,6 +45,8 @@ module Scd
         @address = sender_address
         @total_size = @counter = packet.total
         @buffer = {}
+        @start = Time.now
+        Log.info "Incoming packet from #{pretty_print} #{@start}"
         Log.debug "New peer initialized. #{pretty_print}"
         self << packet
         
@@ -65,6 +67,7 @@ module Scd
       end
 
       def flush
+        Log.info "End of incoming packet from #{pretty_print} took #{(Time.now() - @start)* 1000.0 } ms"
         sio = StringIO.new("", 'a')
         (1..@total_size).each {|i|
           sio.write(@buffer[i])
