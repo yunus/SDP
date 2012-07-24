@@ -1,3 +1,5 @@
+require 'socket'
+
 module Scd
   module Listener
 
@@ -7,10 +9,12 @@ module Scd
       connection.subscribe_to_address!
 
       dispatcher = Scd::Cacher::Dispatcher.new(storage_path)
-
+      
       begin
         loop do
           message, sender_addrinfo = connection.socket.recvmsg()
+         
+
           #Log.debug "message: #{message.inspect}, sender address: #{sender_addrinfo.inspect}"
           packet = Racket::L4::ICMPv6Generic.new message
           case packet.type

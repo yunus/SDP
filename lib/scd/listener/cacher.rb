@@ -44,6 +44,7 @@ module Scd
         @id = packet.id
         @address = sender_address
         @total_size = @counter = packet.total
+        @options = []
         @buffer = {}
         @start = Time.now
         Log.info "Incoming packet from #{pretty_print} #{@start}"
@@ -53,6 +54,9 @@ module Scd
       end
 
       def <<(packet)
+        @options << packet.get_options
+        
+
         @buffer[packet.sequence] = packet.payload
         decrement_counter
         Log.debug "Packet added to peer. #{pretty_print} - seq: #{packet.sequence}"
@@ -88,7 +92,7 @@ module Scd
       end
 
       def pretty_print
-        "Address:#{@address} - id:#{@id} - rate: #{@counter}/#{@total_size}"
+        "Address:#{@address} - id:#{@id} \n    rate: #{@counter}/#{@total_size}\n    options:  #{@options.inspect}"
 
       end
 

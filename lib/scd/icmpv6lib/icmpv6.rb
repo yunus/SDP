@@ -16,11 +16,13 @@ module Scd
       attr_reader   :socket
       attr_reader   :packet
 
-      def initialize(multicast_address, multicast_hops = 10)
+      def initialize(multicast_address, multicast_hops = 10, multicast_loop = 0)
         @multicast_address = multicast_address
         @socket = Socket.open(Socket::PF_INET6, Socket::SOCK_RAW,Socket::IPPROTO_ICMPV6)
         @socket.setsockopt(Socket::IPPROTO_IPV6,Socket::IPV6_MULTICAST_HOPS,
           [multicast_hops].pack('i'))
+        @socket.setsockopt(Socket::IPPROTO_IPV6,Socket::IPV6_MULTICAST_LOOP,
+          [multicast_loop].pack('i'))
         Log.debug "RAW socket #{@socket.inspect} is created"
       end
 
@@ -90,8 +92,7 @@ module Scd
         #sequence and payload should be able to changed inside the caller
         yield @packet if block_given?
 
-        # We need to pad a 0 to the beginning to distinguish the payload from other TLV options
-        @packet.payload = [48].pack('C') + @packet.payload
+        
         # TODO: fix the source address
         @packet.fix!( Racket::L3::Misc.ipv62long("0"),
           Racket::L3::Misc.ipv62long(@multicast_address))

@@ -14,12 +14,13 @@ class Explorer < Thor
     :desc => "The advertisements of the devices are cached in the given directory."
   method_option :log_file, :default => "STDOUT", :aliases => "-l",
     :desc=> "The name of the log file"
-  method_option :debug, :boolean=>true,:aliases => "-d", :desc => "Log level is set to debug, otherwise production mode."
+  method_option :debug, :boolean=>true,:aliases => "-d", :desc => "Log level is set to DEBUG, otherwise production mode."
+  method_option :info, :boolean=>true,:aliases => "-i", :desc => "Log level is set to INFO, otherwise production mode."
   def listen(multicast_group_address)
 
     Scd.const_set(:Log, Logger.new(options[:log_file] == "STDOUT" ? STDOUT : options[:log_file]) )
-    Scd::Log.level =  options[:debug] ? Logger::DEBUG : Logger::ERROR
-
+    log_level(options)
+    
     Scd::Listener.listen_advertisements(multicast_group_address, 
       options[:cache_path], options[:profile],options[:max_transmission_unit])
     
@@ -39,11 +40,12 @@ class Explorer < Thor
   method_option :log_file, :default => "STDOUT", :aliases => "-l",
     :desc=> "The name of the log file"
   method_option :debug, :boolean => true,:aliases => "-d",
-    :desc => "Log level is set to debug, otherwise production mode."
-
+    :desc => "Log level is set to DEBUG, otherwise production mode."
+  method_option :info, :boolean=>true,:aliases => "-i",
+    :desc => "Log level is set to INFO, otherwise production mode."
   def publish(multicast_group_address)
     Scd.const_set(:Log, Logger.new(options[:log_file] == "STDOUT" ? STDOUT : options[:log_file]) )
-    Scd::Log.level =  options[:debug] ? Logger::DEBUG : Logger::ERROR
+    log_level(options)
 
     type_class = options[:solicitation] ? Scd::ICMPv6::Solicitation : Scd::ICMPv6::Advertisement
 
@@ -54,7 +56,16 @@ class Explorer < Thor
 
   end
 
-
+private
+def log_level(options)
+  if options[:debug]
+      Scd::Log.level =  Logger::DEBUG
+    elsif options[:info]
+      Scd::Log.level =   Logger::INFO
+    else
+       Scd::Log.level = Logger::ERROR
+    end
+end
 
 
 end
