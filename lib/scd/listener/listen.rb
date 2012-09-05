@@ -9,6 +9,12 @@ module Scd
       connection.subscribe_to_address!
 
       dispatcher = Scd::Cacher::Dispatcher.new(storage_path)
+
+      # signal 2 is INT signal ctrl+c
+      Signal.trap(2) do
+        dispatcher.flush_all
+        exit()
+      end
       
       begin
         loop do
