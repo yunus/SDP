@@ -47,7 +47,7 @@ module Scd
         @options = []
         @buffer = {}
         @start = Time.now
-        Log.info "Incoming packet from #{pretty_print} #{@start}"
+        Log.info "Incoming packet from #{pretty_print} start: #{time_print(@start)}"
         Log.debug "New peer initialized. #{pretty_print}"
         self << packet
         
@@ -71,7 +71,8 @@ module Scd
       end
 
       def flush
-        Log.info "End of incoming packet from #{pretty_print} took #{(Time.now() - @start)* 1000.0 } ms"
+        now = Time.now()
+        Log.info "End of incoming packet from #{pretty_print} took #{(now - @start)* 1000.0 } ms END time: #{time_print(now)}"
         sio = StringIO.new("", 'a')
         (1..@total_size).each {|i|
           sio.write(@buffer[i])
@@ -92,8 +93,13 @@ module Scd
       end
 
       def pretty_print
-        "Address:#{@address} - id:#{@id} \n    rate: #{@counter}/#{@total_size}\n    options:  #{@options.inspect}"
+        "Address:#{@address} - id:#{@id} \n    rate: #{@counter}/#{@total_size}\n    options:  #{@options.inspect} \n"
 
+      end
+
+      def time_print(time)
+        # print the minute of hour : second of minute : milliseconds
+        time.strftime("%M:%S:%L")
       end
 
     end
