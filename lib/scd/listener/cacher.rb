@@ -44,7 +44,7 @@ module Scd
     end
 
     class Peer
-      attr_accessor :id,:address,:total_size,:counter
+      attr_accessor :id,:address,:total_size,:counter,:start
       attr_accessor :buffer
 
 

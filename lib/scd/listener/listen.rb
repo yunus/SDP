@@ -10,13 +10,16 @@ module Scd
 
       dispatcher = Scd::Cacher::Dispatcher.new(storage_path)
 
-      # signal 2 is INT signal ctrl+c
+      
+      
+      begin
+
+        # signal 2 is INT signal ctrl+c
       Signal.trap(2) do
         dispatcher.flush_all
         exit()
       end
-      
-      begin
+
         loop do
           message, sender_addrinfo = connection.socket.recvmsg()
          
