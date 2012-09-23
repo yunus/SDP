@@ -6,7 +6,7 @@ module Scd
   module Responder
     # This method should make the necessary inference and query, then should
     # return the result with a unicast message to the destination.
-    def self.solicitation(packet,address, service_description_file,mtu=1500)
+    def self.solicitation(packet,address, service_description_file)
       Log.info "INCOMING SOLICITATION MESSAGE from #{address}"
       now = Time.now
       solicitation_packet =  Racket::L4::ICMPv6CapabilitySolicitation.new packet
@@ -20,7 +20,7 @@ module Scd
       result = parser.execute samsung_graph
 
        #TODO: Some inference will go in here
-      Scd::Publisher.pub_message(result.to_s, address, Scd::ICMPv6::Advertisement, mtu)
+      Scd::Publisher.pub_message(result.to_s, address, Scd::ICMPv6::Advertisement)
       Log.info "REPLY to SOLICITATION MESSAGE from #{address}, took #{(Time.now() - now) * 1000.0} ms"
 
     end

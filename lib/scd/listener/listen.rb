@@ -3,7 +3,7 @@ require 'socket'
 module Scd
   module Listener
 
-    def self.listen_advertisements(multicast_address, storage_path,own_information,mtu)
+    def self.listen_advertisements(multicast_address, storage_path,own_information)
 
       connection = Scd::ICMPv6::Advertisement.new(multicast_address, 1)
       connection.subscribe_to_address!
@@ -28,9 +28,12 @@ module Scd
           packet = Racket::L4::ICMPv6Generic.new message
           case packet.type
           when Racket::L4::ICMPv6Generic::ICMPv6_TYPE_CAPABILITY_SOLICITATION
-            Scd::Responder.solicitation(packet, sender_addrinfo.ip_address.split('%').first, own_information,mtu)
+            Scd::Responder.solicitation(packet, sender_addrinfo.ip_address.split('%').first, own_information)
           when Racket::L4::ICMPv6Generic::ICMPv6_TYPE_CAPABILITY_ADVERTISEMENT
-            dispatcher << {:message => message,:address => sender_addrinfo.ip_address.split('%').first}
+            advertisement = Racket::L4::ICMPv6CapabilityAdvertisement.new(message)
+            sender_address = sender_addrinfo.ip_address.split('%').first
+            Log.info "Advertisement from #{sender_address} at time: #{Time.now.strftime("%M:%S:%L")} "
+            File.open("#{storage_path}/#{sender_address}.rdf", "w") { |i| i.write advertisement.payload }
           end          
         end
       rescue => err
