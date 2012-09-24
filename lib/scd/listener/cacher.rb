@@ -36,7 +36,7 @@ module Scd
       def flush_all
         Log.info "******************* Dropped messages ********************"
         @peers.each do |id,p|
-          Log.info "Dropped message from: #{p.address} total_size: #{p.total_size} left: #{p.counter} start: #{p.start}"
+          Log.info "Dropped message from: #{p.address} total_size: #{p.total_size} left: #{p.counter} which: #{p.buffer.keys.sort.inspect} start: #{p.start}"
         end
       end
 
