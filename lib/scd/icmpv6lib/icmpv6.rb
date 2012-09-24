@@ -48,13 +48,13 @@ module Scd
 
     class Advertisement < ICMPv6Base
 
-      def build(payload,sequence=1,total=1)
+      def build(payload)
        
         @packet = Racket::L4::ICMPv6CapabilityAdvertisement.new()
-        @packet.sequence = sequence
+        
          #We need to pad a 0 to the beginning to distinguish the payload from other TLV options
         @packet.payload =  "0" +payload
-        @packet.total = total
+        
         #sequence and payload should be able to changed inside the caller
         yield @packet if block_given?
 
@@ -82,13 +82,13 @@ module Scd
 
     class Solicitation < ICMPv6Base
 
-      def build(payload,sequence=1,total=1)
+      def build(payload)
 
         @packet = Racket::L4::ICMPv6CapabilitySolicitation.new()
-        @packet.sequence = sequence
+        
         #We need to pad a 0 to the beginning to distinguish the payload from other TLV options
         @packet.payload =  "0" +payload
-        @packet.total = total
+        
         #sequence and payload should be able to changed inside the caller
         yield @packet if block_given?
 
@@ -100,8 +100,8 @@ module Scd
         @packet
       end    
 
-      def build_and_publish(payload='',sequence=1)
-        publish(build payload,sequence)
+      def build_and_publish(payload='')
+        publish(build payload)
       end
 
     

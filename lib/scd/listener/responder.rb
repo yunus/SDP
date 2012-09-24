@@ -10,7 +10,7 @@ module Scd
       Log.info "INCOMING SOLICITATION MESSAGE from #{address}"
       now = Time.now
       solicitation_packet =  Racket::L4::ICMPv6CapabilitySolicitation.new packet
-      raise "solicitation packet should be just one package." if solicitation_packet.total > 1
+      #raise "solicitation packet should be just one package." if solicitation_packet.total > 1
       #REMOVE the starting zero which is placed there to differentiate the
       options = solicitation_packet.get_options
       #Log.debug "Solicitation packet carries: \n#{solicitation_packet.payload}"

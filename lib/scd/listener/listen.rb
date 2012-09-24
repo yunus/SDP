@@ -32,8 +32,8 @@ module Scd
           when Racket::L4::ICMPv6Generic::ICMPv6_TYPE_CAPABILITY_ADVERTISEMENT
             advertisement = Racket::L4::ICMPv6CapabilityAdvertisement.new(message)
             sender_address = sender_addrinfo.ip_address.split('%').first
-            Log.info "Advertisement from #{sender_address} at time: #{Time.now.strftime("%M:%S:%L")} "
-            File.open("#{storage_path}/#{sender_address}.rdf", "w") { |i| i.write advertisement.payload }
+            Log.info "Advertisement from #{sender_address} at time_in: #{Time.now.strftime("%M:%S:%L")} "
+            File.open("#{storage_path}/#{sender_address}.rdf", "w") { |f| f.write advertisement.payload }
           end          
         end
       rescue => err
