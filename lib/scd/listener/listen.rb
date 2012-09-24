@@ -8,7 +8,7 @@ module Scd
       connection = Scd::ICMPv6::Advertisement.new(multicast_address, 1)
       connection.subscribe_to_address!
 
-      dispatcher = Scd::Cacher::Dispatcher.new(storage_path)
+      
 
       
       
@@ -16,7 +16,7 @@ module Scd
 
         # signal 2 is INT signal ctrl+c
       Signal.trap(2) do
-        dispatcher.flush_all
+        Log.info "********************* END ********************"
         exit()
       end
 
