@@ -37,7 +37,7 @@ module Scd
       icmpv6_socket = type_class.new(destination_address)
       #ID field to distinguish the packets
       nonce ||= SecureRandom.random_number(10000)
-      Log.info "Sending packet  start: #{Time.now().strftime("%M:%S:%L")}"
+      Log.info "Sending packet  id: #{nonce} start: #{Time.now().strftime("%M:%S:%L")}"
       while buffer = io.read(mtu)
         i+=1
         # icmpv6 packet is generated
