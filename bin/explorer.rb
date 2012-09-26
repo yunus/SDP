@@ -43,6 +43,8 @@ class Explorer < Thor
     :desc => "Log level is set to DEBUG, otherwise production mode."
   method_option :info, :boolean=>true,:aliases => "-i",
     :desc => "Log level is set to INFO, otherwise production mode."
+  method_option :sleep_time, :default => 0, :type => :numeric, :aliases =>"-t",
+    :desc => "Waiting time in seconds between the packets of the same message."
   def publish(multicast_group_address)
     Scd.const_set(:Log, Logger.new(options[:log_file] == "STDOUT" ? STDOUT : options[:log_file]) )
     log_level(options)
@@ -50,9 +52,9 @@ class Explorer < Thor
     type_class = options[:solicitation] ? Scd::ICMPv6::Solicitation : Scd::ICMPv6::Advertisement
 
     Scd::Publisher.pub_file(options[:file], multicast_group_address, type_class,
-      Float(options[:max_transmission_unit]))  unless options[:file].nil?
+      Float(options[:max_transmission_unit]),options[:sleep_time])  unless options[:file].nil?
     Scd::Publisher.pub_message(options[:message], multicast_group_address, type_class,
-      Float(options[:max_transmission_unit]))  unless options[:message].nil?
+      Float(options[:max_transmission_unit]),options[:sleep_time])  unless options[:message].nil?
 
   end
 

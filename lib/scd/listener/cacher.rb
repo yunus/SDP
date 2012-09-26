@@ -80,7 +80,7 @@ module Scd
 
       def flush
         now = Time.now()
-        Log.info "End of incoming packet from #{pretty_print} took #{(now - @start)* 1000.0 } ms END time: #{time_print(now)}"
+        Log.info "End of incoming packet from #{pretty_print} id:#{@id} took #{(now - @start)* 1000.0 } ms END time: #{time_print(now)}"
         sio = StringIO.new("", 'a')
         (1..@total_size).each {|i|
           sio.write(@buffer[i])
