@@ -20,7 +20,7 @@ module Scd
       result = parser.execute samsung_graph
 
        #TODO: Some inference will go in here
-      Scd::Publisher.pub_message(result.to_s, address, Scd::ICMPv6::Advertisement, mtu,nonce)
+      Scd::Publisher.pub_message(result.to_s, address, Scd::ICMPv6::Advertisement, mtu,0,nonce)
       Log.info "REPLY to SOLICITATION MESSAGE from #{address}, took #{(Time.now() - now) * 1000.0} ms"
 
     end
