@@ -70,7 +70,8 @@ module Scd
         
       end
 
-      def <<(packet,nonce,options)
+      def <<(packet_array)
+        packet,nonce,options = packet_array
         @options << options
         
 
