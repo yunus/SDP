@@ -12,9 +12,9 @@ module Scd
         @peers = {}
       end
 
-      def self.get_nonce(packet)
+      def self.get_nonce(options)
         nonce=''
-        packet.get_options.each { |opt| nonce = opt.last if opt.first == SCD::Scd::ICMPv6::NONCE_TYPE  }
+        options.each { |opt| nonce = opt.last if opt.first == Scd::ICMPv6::NONCE_TYPE  }
         nonce
       end
 
@@ -23,13 +23,14 @@ module Scd
         opts[:address]
 
         adv = Racket::L4::ICMPv6CapabilityAdvertisement.new(opts[:message])
+        options = adv.get_options
+        nonce = Dispatcher.get_nonce(options)
         
-        
-        hashid = Peer.hash(opts[:address], Dispatcher.get_nonce(adv))
+        hashid = Peer.hash(opts[:address], nonce )
         Log.debug "hash:#{hashid.inspect},   #{adv.pretty},  #{@peers.has_key?(hashid).inspect} "
         @peers.has_key?(hashid) ?
-          @peers[hashid] << adv :
-          @peers[hashid]= Peer.new(adv, opts[:address])
+          @peers[hashid] << [adv,nonce,options] :
+          @peers[hashid]= Peer.new(adv, opts[:address],nonce,options)
 
         if @peers[hashid].is_complete?
           sio = (@peers.delete(hashid)).flush
@@ -55,11 +56,12 @@ module Scd
       attr_accessor :buffer
 
 
-      def initialize(packet,sender_address)
+      def initialize(packet,sender_address,nonce,options)
         @nonce = Dispatcher.get_nonce(packet)
         @address = sender_address
         @total_size = @counter = packet.total
-        @options = []
+        @options = ([] << options)
+       
         @buffer = {}
         @start = Time.now
         Log.info "Incoming packet from #{pretty_print} start: #{time_print(@start)}"
@@ -68,8 +70,8 @@ module Scd
         
       end
 
-      def <<(packet)
-        @options << packet.get_options
+      def <<(packet,nonce,options)
+        @options << options
         
 
         @buffer[packet.sequence] = packet.payload

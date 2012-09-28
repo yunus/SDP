@@ -12,7 +12,7 @@ module Scd
       solicitation_packet =  Racket::L4::ICMPv6CapabilitySolicitation.new packet
       raise "solicitation packet should be just one package." if solicitation_packet.total > 1
       #REMOVE the starting zero which is placed there to differentiate the
-      nonce = Dispatcher.get_nonce(solicitation_packet)
+      nonce = Dispatcher.get_nonce(solicitation_packet.get_options)
       #Log.debug "Solicitation packet carries: \n#{solicitation_packet.payload}"
       parser = SPARQL.parse(solicitation_packet.payload)
       samsung_graph = RDF::Graph.load(service_description_file, :format=> :n3)
