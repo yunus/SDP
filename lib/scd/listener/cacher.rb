@@ -57,7 +57,7 @@ module Scd
 
 
       def initialize(packet,sender_address,nonce,options)
-        @nonce = Dispatcher.get_nonce(packet)
+        @nonce = nonce
         @address = sender_address
         @total_size = @counter = packet.total
         @options = ([] << options)
