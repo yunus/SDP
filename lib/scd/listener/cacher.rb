@@ -12,13 +12,20 @@ module Scd
         @peers = {}
       end
 
+      def self.get_nonce(packet)
+        nonce=''
+        packet.get_options.each { |opt| nonce = opt.last if opt.first == SCD::Scd::ICMPv6::NONCE_TYPE  }
+        nonce
+      end
+
       def <<(opts)
         opts[:message]
         opts[:address]
 
         adv = Racket::L4::ICMPv6CapabilityAdvertisement.new(opts[:message])
         
-        hashid = Peer.hash(opts[:address], adv.id)
+        
+        hashid = Peer.hash(opts[:address], Dispatcher.get_nonce(adv))
         Log.debug "hash:#{hashid.inspect},   #{adv.pretty},  #{@peers.has_key?(hashid).inspect} "
         @peers.has_key?(hashid) ?
           @peers[hashid] << adv :
@@ -44,12 +51,12 @@ module Scd
     end
 
     class Peer
-      attr_accessor :id,:address,:total_size,:counter,:start
+      attr_accessor :nonce,:address,:total_size,:counter,:start
       attr_accessor :buffer
 
 
       def initialize(packet,sender_address)
-        @id = packet.id
+        @nonce = Dispatcher.get_nonce(packet)
         @address = sender_address
         @total_size = @counter = packet.total
         @options = []
@@ -71,16 +78,16 @@ module Scd
       end
 
       def hash
-        self.hash(@address,@id)
+        self.hash(@address,@nonce)
       end
 
-      def self.hash(address,id)
-        "#{address}-#{id}".hash
+      def self.hash(address,nonce)
+        "#{address}-#{nonce}".hash
       end
 
       def flush
         now = Time.now()
-        Log.info "End of incoming packet from #{pretty_print} id:#{@id} took #{(now - @start)* 1000.0 } ms END time: #{time_print(now)}"
+        Log.info "End of incoming packet from #{pretty_print} nonce:#{@nonce} took #{(now - @start)* 1000.0 } ms END time: #{time_print(now)}"
         sio = StringIO.new("", 'a')
         (1..@total_size).each {|i|
           sio.write(@buffer[i])
@@ -93,7 +100,7 @@ module Scd
       def is_complete?
         @counter == 0
       end
-
+      
       private
       #In case of multi-threaded app below method should be synchronized
       def decrement_counter
@@ -101,7 +108,7 @@ module Scd
       end
 
       def pretty_print
-        "Address:#{@address} - id:#{@id} \n    rate: #{@counter}/#{@total_size}\n    options:  #{@options.inspect} \n"
+        "Address:#{@address} - nonce:#{@nonce} \n    rate: #{@counter}/#{@total_size}\n    options:  #{@options.inspect} \n"
 
       end
 

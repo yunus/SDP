@@ -45,8 +45,8 @@ module Scd
       
           adv.sequence = i
           adv.total = number_of_packets
-          adv.id = nonce
-          #adv.add_option(Scd::ICMPv6::NONCE_TYPE,nonce)
+          #adv.id = nonce
+          adv.add_option(Scd::ICMPv6::NONCE_TYPE,nonce.to_s)
         end
         icmpv6_socket.publish!
         sleep sleep_time
