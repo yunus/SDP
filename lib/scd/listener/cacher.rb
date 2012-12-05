@@ -12,11 +12,11 @@ module Scd
         @peers = {}
       end
 
-      def self.get_nonce(options)
-        nonce=''
-        options.each { |opt| nonce = opt.last if opt.first == Scd::ICMPv6::NONCE_TYPE  }
-        nonce
+      def self.get_tlvs(options)
+        inverted_types = Scd::ICMPv6::TLV_TYPES.invert
+        options.reduce({}) {|memo,opt|  memo[inverted_types[opt.first]] = opt.last if inverted_types.has_key? opt.first; memo  }
       end
+      
 
       def <<(opts)
         opts[:message]
@@ -24,7 +24,9 @@ module Scd
 
         adv = Racket::L4::ICMPv6CapabilityAdvertisement.new(opts[:message])
         options = adv.get_options
-        nonce = Dispatcher.get_nonce(options)
+        #TODO: For the time being only nonce type is checked
+        # we need to save legacy protocol's service definitions too
+        nonce = Dispatcher.get_tlvs(options)[:NONCE_TYPE]
         
         hashid = Peer.hash(opts[:address], nonce )
         Log.debug "hash:#{hashid.inspect},   #{adv.pretty},  #{@peers.has_key?(hashid).inspect} "

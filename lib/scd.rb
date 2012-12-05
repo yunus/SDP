@@ -6,6 +6,7 @@ require_relative "scd/publisher/publish"
 require_relative "scd/listener/listen"
 require_relative "scd/listener/cacher"
 require_relative "scd/listener/responder"
+require_relative "scd/legacy/legacy"
 
 module Scd
   Log =  Logger.new STDOUT

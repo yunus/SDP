@@ -3,12 +3,14 @@ require 'socket'
 module Scd
   module Listener
 
-    def self.listen_advertisements(multicast_address, storage_path,own_information,mtu)
+    def self.listen_advertisements(multicast_address, storage_path,own_information,mtu,legacy_urls={})
 
       connection = Scd::ICMPv6::Advertisement.new(multicast_address, 1)
       connection.subscribe_to_address!
 
       dispatcher = Scd::Cacher::Dispatcher.new(storage_path)
+
+      Scd::Legacy::LegacyURLs.instance.assign_urls legacy_urls
 
       
       

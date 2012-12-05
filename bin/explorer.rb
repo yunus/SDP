@@ -12,6 +12,8 @@ class Explorer < Thor
     :aliases => "-n", :desc => "Depending on the interface type different MTU values are required."
   method_option :cache_path, :default => "./", :type => :string, :aliases => "-c",
     :desc => "The advertisements of the devices are cached in the given directory."
+  method_option :slp_url, :default => nil, :type => :string,
+    :desc => "The URL representation of the service in Service Location Protocol"
   method_option :log_file, :default => "STDOUT", :aliases => "-l",
     :desc=> "The name of the log file"
   method_option :debug, :boolean=>true,:aliases => "-d", :desc => "Log level is set to DEBUG, otherwise production mode."
@@ -21,8 +23,10 @@ class Explorer < Thor
     Scd.const_set(:Log, Logger.new(options[:log_file] == "STDOUT" ? STDOUT : options[:log_file]) )
     log_level(options)
     
+    legacy_urls =  {Scd::Legacy::SLP_URL => options[:slp_url]}
+
     Scd::Listener.listen_advertisements(multicast_group_address, 
-      options[:cache_path], options[:profile],Float(options[:max_transmission_unit]))
+      options[:cache_path], options[:profile],Float(options[:max_transmission_unit]), legacy_urls)
     
   end
 
@@ -37,6 +41,8 @@ class Explorer < Thor
     :desc => "Message type is set to solicitation. Otherwise advertisement is sent."
   method_option :max_transmission_unit, :default => 1500, :type => :numeric,
     :aliases => "-n", :desc => "Depending on the interface type different MTU values are required."
+  method_option :slp_srvrqst, :default => nil, :type => :string,
+    :desc => "SLP service type URL for the query like 'service:test' "
   method_option :log_file, :default => "STDOUT", :aliases => "-l",
     :desc=> "The name of the log file"
   method_option :debug, :boolean => true,:aliases => "-d",
@@ -50,11 +56,13 @@ class Explorer < Thor
     log_level(options)
 
     type_class = options[:solicitation] ? Scd::ICMPv6::Solicitation : Scd::ICMPv6::Advertisement
+    puts options.inspect
+    tlvs={:SLP_SRVRQST => options[:slp_srvrqst]}
 
     Scd::Publisher.pub_file(options[:file], multicast_group_address, type_class,
-      Float(options[:max_transmission_unit]),options[:sleep_time])  unless options[:file].nil?
+      Float(options[:max_transmission_unit]),options[:sleep_time],tlvs)  unless options[:file].nil?
     Scd::Publisher.pub_message(options[:message], multicast_group_address, type_class,
-      Float(options[:max_transmission_unit]),options[:sleep_time])  unless options[:message].nil?
+      Float(options[:max_transmission_unit]),options[:sleep_time],tlvs)  unless options[:message].nil?
 
   end
 

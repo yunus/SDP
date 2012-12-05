@@ -11,8 +11,11 @@ module Scd
       now = Time.now
       solicitation_packet =  Racket::L4::ICMPv6CapabilitySolicitation.new packet
       raise "solicitation packet should be just one package." if solicitation_packet.total > 1
-      #REMOVE the starting zero which is placed there to differentiate the
-      nonce = Scd::Cacher::Dispatcher.get_nonce(solicitation_packet.get_options)
+      
+      tlvs = Scd::Cacher::Dispatcher.get_tlvs(solicitation_packet.get_options)
+      Log.debug "Solicitation tlvs: #{tlvs.inspect}"
+      
+      
       #Log.debug "Solicitation packet carries: \n#{solicitation_packet.payload}"
       parser = SPARQL.parse(solicitation_packet.payload)
       samsung_graph = RDF::Graph.load(service_description_file, :format=> :n3)
@@ -20,7 +23,7 @@ module Scd
       result = parser.execute samsung_graph
 
        #TODO: Some inference will go in here
-      Scd::Publisher.pub_message(result.to_s, address, Scd::ICMPv6::Advertisement, mtu,0,nonce)
+       Scd::Publisher.pub_message(result.to_s, address, Scd::ICMPv6::Advertisement, mtu,0,tlvs)
       Log.info "REPLY to SOLICITATION MESSAGE from #{address}, took #{(Time.now() - now) * 1000.0} ms"
 
     end

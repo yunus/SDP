@@ -9,14 +9,18 @@ module Scd
   module ICMPv6
 
     #RFC-3971 Secure Neighbor Discovery
-    NONCE_TYPE = 14
+    #NONCE_TYPE = 14
+    #SLP_SRVRQST = 200 # Not standardized
+    #SLP_SRVRPLY = 201 # Not standardized
+    TLV_TYPES = {:NONCE_TYPE => 14,:SLP_SRVRQST => 200, :SLP_SRVRPLY => 201}
+
 
     class ICMPv6Base
       attr_accessor :multicast_address
       attr_reader   :socket
       attr_reader   :packet
 
-      def initialize(multicast_address, multicast_hops = 10, multicast_loop = 0)
+      def initialize(multicast_address, multicast_hops = 10, multicast_loop = 1)
         @multicast_address = multicast_address
         @socket = Socket.open(Socket::PF_INET6, Socket::SOCK_RAW,Socket::IPPROTO_ICMPV6)
         @socket.setsockopt(Socket::IPPROTO_IPV6,Socket::IPV6_MULTICAST_HOPS,
