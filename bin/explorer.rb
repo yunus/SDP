@@ -56,7 +56,6 @@ class Explorer < Thor
     log_level(options)
 
     type_class = options[:solicitation] ? Scd::ICMPv6::Solicitation : Scd::ICMPv6::Advertisement
-    puts options.inspect
     tlvs={:SLP_SRVRQST => options[:slp_srvrqst]}
 
     Scd::Publisher.pub_file(options[:file], multicast_group_address, type_class,

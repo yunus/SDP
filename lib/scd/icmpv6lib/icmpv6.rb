@@ -20,7 +20,7 @@ module Scd
       attr_reader   :socket
       attr_reader   :packet
 
-      def initialize(multicast_address, multicast_hops = 10, multicast_loop = 1)
+      def initialize(multicast_address, multicast_hops = 10, multicast_loop = 0)
         @multicast_address = multicast_address
         @socket = Socket.open(Socket::PF_INET6, Socket::SOCK_RAW,Socket::IPPROTO_ICMPV6)
         @socket.setsockopt(Socket::IPPROTO_IPV6,Socket::IPV6_MULTICAST_HOPS,
