@@ -3,7 +3,7 @@ require File.expand_path('../lib/scd/version', __FILE__)
 
 Gem::Specification.new do |gem|
   gem.authors       = ["Yunus Durmus"]
-  gem.email         = ["yunusd84@gmail.com"]
+  gem.email         = ["yunus@yanis.com"]
   gem.description   = %q{Semantic Capability Discovery protocol implementation}
   gem.summary       = %q{Semantic Capability Discovery protocol}
   gem.homepage      = ""
