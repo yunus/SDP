@@ -1,29 +1,67 @@
 # Scd
 
-TODO: Write a gem description
+SCD (Semantic Capability Discovery) later changed to Smart Discovery Protocol (SDP).
+
+Smart Discovery Protocol is a service discovery protocol which carries the information of the service, the device and the owner.
+The information is represented and queried in ontologies like OWL and SPARQL. 
+
+The protocol can be considered as an addon to the Neighbor Discovery Protocol of IPv6  standard. Two new messages are defined,
+Smart Solicitation and Smart Advertisement. These messages are ICMPv6 messages and they carry semantic information in their 
+payloads. 
+
+The type-length-value (TLV) options of the ICMPv6 standard are used to carry the simple URL representations of the services
+in legacy standards. For the time being only TLV for SLP is added. 
+
+This is the proof of concept implementation of the protocol in RUBY. Not in production quality.
+There is no event machine integration or any other performance improvement. 
+RAW sockets are used therefore require root permission. 
+
+For SLP integration, i needed to use parsing and matching methods for SLP URLs. 
+In order to show that existing APIs can be used, I have placed jSLP jar (RC3) (not uploaded) and call it as a separate process.
+If you download jSLP and put it in the bin directory it works. But it was just for demonstration.
+
+
+
+
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Although I have implemented SDP (=SCD) as a gem I have never tried to use it as a gem.
 
-    gem 'scd'
+What I do is:
 
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install scd
+1. Download the source, git clone ...
+2. use ruby >1.9.3, (advised to use RVM) other libraries including jruby does not have FULL support for ICMPv6
+3. bundle install, for dependencies.
+		Among the dependencies 'racket' plugin is directed to the one that I have changed. 
+		You may need to create its gem file by yourself. To do that also download it (my version) run rake build.
+		Then gem install LOCAL_PATH/racket/racket...gem 
+4.  Well thats it you have installed it
+ 
 
 ## Usage
 
-TODO: Write usage instructions here
+As I said I have never tried it as a gem. Instead I have created thor scripts.
+Under the bin directory, you can find explorer.rb. 
+If you run 'ruby bin/explorer.rb' it explains you the usage. I hope you can understand whats going on from there.
 
 ## Contributing
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+So what is the point of making this code open?
+
+
+## License
+
+   Copyright 2012 Yunus Durmus
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
