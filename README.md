@@ -1,6 +1,5 @@
-# Scd
+# Smart Discovery Protocol (SDP)
 
-SCD (Semantic Capability Discovery) later changed to Smart Discovery Protocol (SDP).
 
 Smart Discovery Protocol is a service discovery protocol which carries the information of the service, the device and the owner.
 The information is represented and queried in ontologies like OWL and SPARQL. 
@@ -26,7 +25,7 @@ If you download jSLP and put it in the bin directory it works. But it was just f
 
 ## Installation
 
-Although I have implemented SDP (=SCD) as a gem I have never tried to use it as a gem.
+Although I have implemented SDP  as a gem I have never tried to use it as a gem.
 
 What I do is:
 
@@ -50,18 +49,4 @@ If you run 'ruby bin/explorer.rb' it explains you the usage. I hope you can unde
 So what is the point of making this code open?
 
 
-## License
 
-   Copyright 2012 Yunus Durmus
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.

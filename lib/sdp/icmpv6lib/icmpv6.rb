@@ -5,7 +5,7 @@ require 'racket'
 
 
 
-module Scd
+module Sdp
   module ICMPv6
 
     #RFC-3971 Secure Neighbor Discovery

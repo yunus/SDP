@@ -2,7 +2,7 @@
 require 'linkeddata'
 require 'sparql'
 
-module Scd
+module Sdp
   module Responder
     # This method should make the necessary inference and query, then should
     # return the result with a unicast message to the destination.
@@ -12,7 +12,7 @@ module Scd
       solicitation_packet =  Racket::L4::ICMPv6CapabilitySolicitation.new packet
       raise "solicitation packet should be just one package." if solicitation_packet.total > 1
       
-      tlvs = Scd::Cacher::Dispatcher.get_tlvs(solicitation_packet.get_options)
+      tlvs = Sdp::Cacher::Dispatcher.get_tlvs(solicitation_packet.get_options)
       Log.debug "Solicitation tlvs: #{tlvs.inspect}"
       
       
@@ -23,7 +23,7 @@ module Scd
       result = parser.execute samsung_graph
 
        #TODO: Some inference will go in here
-       Scd::Publisher.pub_message(result.to_s, address, Scd::ICMPv6::Advertisement, mtu,0,tlvs)
+       Sdp::Publisher.pub_message(result.to_s, address, Sdp::ICMPv6::Advertisement, mtu,0,tlvs)
       Log.info "REPLY to SOLICITATION MESSAGE from #{address}, took #{(Time.now() - now) * 1000.0} ms"
 
     end

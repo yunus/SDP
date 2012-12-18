@@ -1,10 +1,16 @@
 #!/usr/bin/env ruby
 
 require "thor"
-require_relative  '../lib/scd'
+begin
+	require "sdp"
+rescue LoadError => le
+	puts le.message
+	require_relative  '../lib/sdp'
+end
+
 
 class Explorer < Thor
-  desc "listen MULTICAST_GROUP_ADDRESS ('ff15::114')", "Listens for the incoming SCD packets.
+  desc "listen MULTICAST_GROUP_ADDRESS ('ff15::114')", "Listens for the incoming SDP packets.
         Advertisement packets are cached and Solicitation packets are replied."
   method_option :profile, :required=>true, :aliases => "-p",:type => :string,
     :desc => "The absolute address of advertisement profile file of the device. It includes all the device, service and social network information"
@@ -20,12 +26,12 @@ class Explorer < Thor
   method_option :info, :boolean=>true,:aliases => "-i", :desc => "Log level is set to INFO, otherwise production mode."
   def listen(multicast_group_address)
 
-    Scd.const_set(:Log, Logger.new(options[:log_file] == "STDOUT" ? STDOUT : options[:log_file]) )
+    Sdp.const_set(:Log, Logger.new(options[:log_file] == "STDOUT" ? STDOUT : options[:log_file]) )
     log_level(options)
     
-    legacy_urls =  {Scd::Legacy::SLP_URL => options[:slp_url]}
+    legacy_urls =  {Sdp::Legacy::SLP_URL => options[:slp_url]}
 
-    Scd::Listener.listen_advertisements(multicast_group_address, 
+    Sdp::Listener.listen_advertisements(multicast_group_address, 
       options[:cache_path], options[:profile],Float(options[:max_transmission_unit]), legacy_urls)
     
   end
@@ -52,15 +58,15 @@ class Explorer < Thor
   method_option :sleep_time, :default => 0, :type => :numeric, :aliases =>"-t",
     :desc => "Waiting time in seconds between the packets of the same message."
   def publish(multicast_group_address)
-    Scd.const_set(:Log, Logger.new(options[:log_file] == "STDOUT" ? STDOUT : options[:log_file]) )
+    Sdp.const_set(:Log, Logger.new(options[:log_file] == "STDOUT" ? STDOUT : options[:log_file]) )
     log_level(options)
 
-    type_class = options[:solicitation] ? Scd::ICMPv6::Solicitation : Scd::ICMPv6::Advertisement
+    type_class = options[:solicitation] ? Sdp::ICMPv6::Solicitation : Sdp::ICMPv6::Advertisement
     tlvs={:SLP_SRVRQST => options[:slp_srvrqst]}
 
-    Scd::Publisher.pub_file(options[:file], multicast_group_address, type_class,
+    Sdp::Publisher.pub_file(options[:file], multicast_group_address, type_class,
       Float(options[:max_transmission_unit]),options[:sleep_time],tlvs)  unless options[:file].nil?
-    Scd::Publisher.pub_message(options[:message], multicast_group_address, type_class,
+    Sdp::Publisher.pub_message(options[:message], multicast_group_address, type_class,
       Float(options[:max_transmission_unit]),options[:sleep_time],tlvs)  unless options[:message].nil?
 
   end
@@ -68,11 +74,11 @@ class Explorer < Thor
 private
 def log_level(options)
   if options[:debug]
-      Scd::Log.level =  Logger::DEBUG
+      Sdp::Log.level =  Logger::DEBUG
     elsif options[:info]
-      Scd::Log.level =   Logger::INFO
+      Sdp::Log.level =   Logger::INFO
     else
-       Scd::Log.level = Logger::ERROR
+       Sdp::Log.level = Logger::ERROR
     end
 end
 

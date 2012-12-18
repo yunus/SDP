@@ -1,5 +1,5 @@
 
-module Scd
+module Sdp
   module Cacher
 
     class Dispatcher
@@ -13,7 +13,7 @@ module Scd
       end
 
       def self.get_tlvs(options)
-        inverted_types = Scd::ICMPv6::TLV_TYPES.invert
+        inverted_types = Sdp::ICMPv6::TLV_TYPES.invert
         options.reduce({}) {|memo,opt|  memo[inverted_types[opt.first]] = opt.last if inverted_types.has_key? opt.first; memo  }
       end
       

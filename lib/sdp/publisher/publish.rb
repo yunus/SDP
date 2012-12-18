@@ -1,13 +1,13 @@
 require 'securerandom'
 
-module Scd
+module Sdp
 
   # Takes the filename, destination address, and may be interface
   # then fragments the input filename into pieces with size MTU.
   # For each fragment a separate advertisement message has been sent with
   # sequence number.
   module Publisher
-    def self.pub_file(filename,destination_address,type_class = Scd::ICMPv6::Advertisement,mtu=1500,sleep_time=0,tlvs)
+    def self.pub_file(filename,destination_address,type_class = Sdp::ICMPv6::Advertisement,mtu=1500,sleep_time=0,tlvs)
       pub(destination_address,type_class,mtu,sleep_time,nil,tlvs) do
         begin
           f= File.open(filename, 'r')
@@ -19,13 +19,13 @@ module Scd
       end
     end
 
-    def self.pub_message(message,destination_address,type_class = Scd::ICMPv6::Advertisement,mtu=1500,sleep_time=0,tlvs)
+    def self.pub_message(message,destination_address,type_class = Sdp::ICMPv6::Advertisement,mtu=1500,sleep_time=0,tlvs)
       pub(destination_address,type_class,mtu,sleep_time,StringIO.new(message),tlvs)
     end
 
 
    # Accepts an IO object. Or send a block which returns the io object
-    def self.pub(destination_address,type_class = Scd::ICMPv6::Advertisement,mtu=1500,sleep_time=0,io = nil,tlvs={})
+    def self.pub(destination_address,type_class = Sdp::ICMPv6::Advertisement,mtu=1500,sleep_time=0,io = nil,tlvs={})
       #TODO: discover the real header size and decrease it in here. 
       # wireshark tells that it is 66 byte
       mtu -= 100
@@ -37,7 +37,7 @@ module Scd
       icmpv6_socket = type_class.new(destination_address)
       #ID field to distinguish the packets
       nonce = tlvs[:NONCE_TYPE] || SecureRandom.random_number(10000)
-      leg_url = Scd::Legacy::LegacyURLs.instance
+      leg_url = Sdp::Legacy::LegacyURLs.instance
 
       Log.info "Sending packet  id: #{nonce} tlvs = #{tlvs.inspect} start: #{Time.now().strftime("%M:%S:%L")}"
       
@@ -49,14 +49,14 @@ module Scd
           adv.sequence = i
           adv.total = number_of_packets
           #adv.id = nonce
-          adv.add_option(Scd::ICMPv6::TLV_TYPES[:NONCE_TYPE],nonce.to_s)
+          adv.add_option(Sdp::ICMPv6::TLV_TYPES[:NONCE_TYPE],nonce.to_s)
           # Legacy support related TLVs should exist only in the first packet
           if i == 1
             # if SLP url matches the request than send whole URL as reply
-            adv.add_option(Scd::ICMPv6::TLV_TYPES[:SLP_SRVRPLY],leg_url.slp_url) if 
-              type_class == Scd::ICMPv6::Advertisement and leg_url.slp_enabled? and leg_url.slp_matches?(tlvs[:SLP_SRVRQST])
-            adv.add_option(Scd::ICMPv6::TLV_TYPES[:SLP_SRVRQST],tlvs[:SLP_SRVRQST]) if 
-              type_class == Scd::ICMPv6::Solicitation and tlvs[:SLP_SRVRQST]
+            adv.add_option(Sdp::ICMPv6::TLV_TYPES[:SLP_SRVRPLY],leg_url.slp_url) if 
+              type_class == Sdp::ICMPv6::Advertisement and leg_url.slp_enabled? and leg_url.slp_matches?(tlvs[:SLP_SRVRQST])
+            adv.add_option(Sdp::ICMPv6::TLV_TYPES[:SLP_SRVRQST],tlvs[:SLP_SRVRQST]) if 
+              type_class == Sdp::ICMPv6::Solicitation and tlvs[:SLP_SRVRQST]
 
           end
           
